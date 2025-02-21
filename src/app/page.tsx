@@ -2,7 +2,7 @@ import TestTimer from "@/components/TestTimer/TestTimer";
 
 export default function Page() {
     return (
-        <div>
+        <div className="p-10">
             <TestTimer />
         </div>
     );

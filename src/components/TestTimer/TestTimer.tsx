@@ -14,9 +14,11 @@ export default function TestTimer() {
     }
 
     return (
-        <HPSTest
-            milliseconds={milliseconds}
-            startTimer={timer.start}
-        />
+        <div>
+            <HPSTest
+                milliseconds={milliseconds}
+                startTimer={timer.start}
+            />
+        </div>
     );
 }
