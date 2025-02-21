@@ -1,11 +1,15 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTimer } from "react-use-precision-timer";
 
 export default function HitsPerSecond() {
+    const timer = useTimer({ delay: 100 }, handleTimeChange);
+
     const hitsLastFiveSeconds = useRef(0);
     const hits = useRef(0);
     const max = useRef(1);
+
     const [milliseconds, setMilliseconds] = useState(0);
     const [started, setStarted] = useState(false);
 
@@ -25,6 +29,7 @@ export default function HitsPerSecond() {
         if (event.key === " ") {
             if (!started) {
                 setStarted(true);
+                timer.start();
             }
 
             hits.current++;
@@ -39,12 +44,6 @@ export default function HitsPerSecond() {
 
         max.current = Math.max(Math.round(max.current * 100), Math.round(hps * 100)) / 100;
     }, [hits]);
-
-    useEffect(() => {
-        if (started) {
-            setInterval(handleTimeChange, 100);
-        }
-    }, [started]);
 
     useEffect(() => {
         window.addEventListener("keyup", handleKeyPress);
