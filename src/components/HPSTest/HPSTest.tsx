@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function HPSTest({
     milliseconds,
@@ -8,6 +8,10 @@ export default function HPSTest({
     startTimer: () => void;
 }) {
     const [pressed, setPressed] = useState(false);
+    const [timeBetweenClicks, setTimeBetweenClicks] = useState({
+        previous: 0,
+        current: 0,
+    });
 
     const hitsLastFiveSeconds = useRef(0);
     const hits = useRef(0);
@@ -44,14 +48,36 @@ export default function HPSTest({
     }
 
     useEffect(() => {
+        if (pressed) {
+            return;
+        }
+
+        setTimeBetweenClicks((currentTime) => {
+            return {
+                previous: currentTime.current,
+                current: Date.now(),
+            };
+        });
+
         if (milliseconds <= 1000) {
             return;
         }
 
         max.current = Math.max(Math.round(max.current * 100), Math.round(hps * 100)) / 100;
-    }, [hits]);
+    }, [pressed]);
 
     useEffect(() => {
+        if (lastFiveSeconds === 0) {
+            hitsLastFiveSeconds.current = 0;
+        }
+    }, [seconds]);
+
+    useEffect(() => {
+        setTimeBetweenClicks({
+            previous: Date.now(),
+            current: Date.now(),
+        });
+
         window.addEventListener("keydown", handleKeyDown);
         window.addEventListener("keyup", handleKeyUp);
 
@@ -61,21 +87,15 @@ export default function HPSTest({
         };
     }, []);
 
-    useEffect(() => {
-        if (lastFiveSeconds === 0) {
-            hitsLastFiveSeconds.current = 0;
-        }
-    }, [seconds]);
-
     return (
         <div
             className="flex flex-col"
         >
             <p>
-                Total - hits: {hits.current}
+                Total - Hits: {hits.current}
             </p>
             <p>
-                Total - time: {seconds}
+                Total - Time: {seconds}
             </p>
             <p>
                 Total - HPS: {hps}
@@ -88,6 +108,12 @@ export default function HPSTest({
             </p>
             <p>
                 Last 5 seconds - HPS: {hpsLastFiveSeconds}
+            </p>
+            <p>
+                Between 2 clicks - HPS: {timeBetweenClicks.previous}
+            </p>
+            <p>
+                Between 2 clicks - Time: {timeBetweenClicks.current - timeBetweenClicks.previous}
             </p>
             <button
                 onClick={() => {
