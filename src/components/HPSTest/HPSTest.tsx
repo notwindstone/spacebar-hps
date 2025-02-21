@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import PeakHPSBar from "@/components/PeakHPSBar/PeakHPSBar";
 
 export default function HPSTest({
     milliseconds,
@@ -16,6 +17,7 @@ export default function HPSTest({
     const hitsLastFiveSeconds = useRef(0);
     const hits = useRef(0);
     const max = useRef(1);
+    const lastFiveSecondsMax = useRef(1);
     const started = useRef(false);
 
     const seconds = milliseconds / 1000;
@@ -65,12 +67,14 @@ export default function HPSTest({
             return;
         }
 
+        lastFiveSecondsMax.current = Math.max(Math.round(lastFiveSecondsMax.current * 100), Math.round(hpsLastFiveSeconds * 100)) / 100;
         max.current = Math.max(Math.round(max.current * 100), Math.round(hps * 100)) / 100;
     }, [pressed]);
 
     useEffect(() => {
         if (lastFiveSeconds === 0) {
             hitsLastFiveSeconds.current = 0;
+            lastFiveSecondsMax.current = 0;
         }
     }, [seconds]);
 
@@ -112,11 +116,22 @@ export default function HPSTest({
                 Last 5 seconds - HPS: {hpsLastFiveSeconds}
             </p>
             <p>
+                Last 5 seconds - Peak HPS: {lastFiveSecondsMax.current}
+            </p>
+            <p>
                 Between 2 clicks - HPS: {hpsBetweenClicks}
             </p>
             <p>
                 Between 2 clicks - Time: {betweenClicksSeconds}
             </p>
+            <PeakHPSBar
+                current={hps}
+                peak={max.current}
+            />
+            <PeakHPSBar
+                current={hpsLastFiveSeconds}
+                peak={lastFiveSecondsMax.current}
+            />
             <button
                 onClick={() => {
                     window.location.reload();
