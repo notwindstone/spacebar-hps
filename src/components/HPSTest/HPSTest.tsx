@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import {useEffect, useRef, useState} from "react";
 
 export default function HPSTest({
     milliseconds,
@@ -7,6 +7,8 @@ export default function HPSTest({
     milliseconds: number;
     startTimer: () => void;
 }) {
+    const [pressed, setPressed] = useState(false);
+
     const hitsLastFiveSeconds = useRef(0);
     const hits = useRef(0);
     const max = useRef(1);
@@ -20,7 +22,13 @@ export default function HPSTest({
     const hps = Math.round(hits.current * 100 / safeSeconds) / 100;
     const hpsLastFiveSeconds = Math.round(hitsLastFiveSeconds.current * 100 / safeLastFiveSeconds) / 100;
 
-    function handleKeyPress(event: KeyboardEvent) {
+    function handleKeyDown(event: KeyboardEvent) {
+        if (event.key === " ") {
+            setPressed(true);
+        }
+    }
+
+    function handleKeyUp(event: KeyboardEvent) {
         if (event.key === " ") {
             if (!started.current) {
                 started.current = true;
@@ -30,6 +38,8 @@ export default function HPSTest({
 
             hits.current++;
             hitsLastFiveSeconds.current++;
+
+            setPressed(false);
         }
     }
 
@@ -42,10 +52,12 @@ export default function HPSTest({
     }, [hits]);
 
     useEffect(() => {
-        window.addEventListener("keyup", handleKeyPress);
+        window.addEventListener("keydown", handleKeyDown);
+        window.addEventListener("keyup", handleKeyUp);
 
         return () => {
-            window.removeEventListener("keyup", handleKeyPress);
+            window.removeEventListener("keydown", handleKeyDown);
+            window.removeEventListener("keyup", handleKeyUp);
         };
     }, []);
 
@@ -84,6 +96,13 @@ export default function HPSTest({
             >
                 Reset
             </button>
+            {
+                pressed ? (
+                    <div className="w-48 h-12 bg-white border-[1px] border-white rounded-md" />
+                ) : (
+                    <div className="w-48 h-12 bg-zinc-900 border-[1px] border-white rounded-md" />
+                )
+            }
         </div>
     );
 }
