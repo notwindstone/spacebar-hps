@@ -20,11 +20,13 @@ export default function HPSTest({
 
     const seconds = milliseconds / 1000;
     const lastFiveSeconds = Math.round((seconds % 5.0) * 10) / 10;
+    const betweenClicksSeconds = (timeBetweenClicks.current - timeBetweenClicks.previous) / 1000;
     const safeSeconds = seconds == 0 ? 1 : seconds;
     const safeLastFiveSeconds = lastFiveSeconds == 0 ? 1 : lastFiveSeconds;
 
     const hps = Math.round(hits.current * 100 / safeSeconds) / 100;
     const hpsLastFiveSeconds = Math.round(hitsLastFiveSeconds.current * 100 / safeLastFiveSeconds) / 100;
+    const hpsBetweenClicks = Math.round(100 / betweenClicksSeconds) / 100;
 
     function handleKeyDown(event: KeyboardEvent) {
         if (event.key === " ") {
@@ -110,10 +112,10 @@ export default function HPSTest({
                 Last 5 seconds - HPS: {hpsLastFiveSeconds}
             </p>
             <p>
-                Between 2 clicks - HPS: {timeBetweenClicks.previous}
+                Between 2 clicks - HPS: {hpsBetweenClicks}
             </p>
             <p>
-                Between 2 clicks - Time: {timeBetweenClicks.current - timeBetweenClicks.previous}
+                Between 2 clicks - Time: {betweenClicksSeconds}
             </p>
             <button
                 onClick={() => {
