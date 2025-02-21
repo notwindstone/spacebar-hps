@@ -1,5 +1,9 @@
+import HitsPerSecond from "@/components/HitsPerSecond";
+
 export default function Page() {
     return (
-        <div />
+        <div>
+            <HitsPerSecond />
+        </div>
     );
 }

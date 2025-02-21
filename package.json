@@ -9,10 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@uidotdev/usehooks": "^2.4.1-experimental.1",
     "next": "15.1.7",
-    "react": "^0.0.0-experimental-fcb4e0f1-20250219",
-    "react-dom": "^0.0.0-experimental-fcb4e0f1-20250219"
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "typescript": "^5",
