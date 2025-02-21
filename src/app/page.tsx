@@ -1,9 +1,9 @@
-import HitsPerSecond from "@/components/HitsPerSecond";
+import TestTimer from "@/components/TestTimer/TestTimer";
 
 export default function Page() {
     return (
         <div>
-            <HitsPerSecond />
+            <TestTimer />
         </div>
     );
 }

@@ -1,17 +1,16 @@
-"use client";
+import { useEffect, useRef } from "react";
 
-import { useEffect, useRef, useState } from "react";
-import { useTimer } from "react-use-precision-timer";
-
-export default function HitsPerSecond() {
-    const timer = useTimer({ delay: 100 }, handleTimeChange);
-
+export default function HPSTest({
+    milliseconds,
+    startTimer,
+}: {
+    milliseconds: number;
+    startTimer: () => void;
+}) {
     const hitsLastFiveSeconds = useRef(0);
     const hits = useRef(0);
     const max = useRef(1);
-
-    const [milliseconds, setMilliseconds] = useState(0);
-    const [started, setStarted] = useState(false);
+    const started = useRef(false);
 
     const seconds = milliseconds / 1000;
     const lastFiveSeconds = Math.round((seconds % 5.0) * 10) / 10;
@@ -21,15 +20,12 @@ export default function HitsPerSecond() {
     const hps = Math.round(hits.current * 100 / safeSeconds) / 100;
     const hpsLastFiveSeconds = Math.round(hitsLastFiveSeconds.current * 100 / safeLastFiveSeconds) / 100;
 
-    function handleTimeChange() {
-        setMilliseconds((ms) => ms + 100);
-    }
-
     function handleKeyPress(event: KeyboardEvent) {
         if (event.key === " ") {
-            if (!started) {
-                setStarted(true);
-                timer.start();
+            if (!started.current) {
+                started.current = true;
+
+                startTimer();
             }
 
             hits.current++;
