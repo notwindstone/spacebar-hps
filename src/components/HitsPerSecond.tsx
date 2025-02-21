@@ -1,21 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function HitsPerSecond() {
-    const [hitsLastFiveSeconds, setHitsLastFiveSeconds] = useState(0);
-    const [hits, setHits] = useState(0);
+    const hitsLastFiveSeconds = useRef(0);
+    const hits = useRef(0);
+    const max = useRef(1);
     const [milliseconds, setMilliseconds] = useState(0);
     const [started, setStarted] = useState(false);
-    const [max, setMax] = useState(0);
 
     const seconds = milliseconds / 1000;
     const lastFiveSeconds = Math.round((seconds % 5.0) * 10) / 10;
     const safeSeconds = seconds == 0 ? 1 : seconds;
     const safeLastFiveSeconds = lastFiveSeconds == 0 ? 1 : lastFiveSeconds;
 
-    const hps = Math.round(hits * 100 / safeSeconds) / 100;
-    const hpsLastFiveSeconds = Math.round(hitsLastFiveSeconds * 100 / safeLastFiveSeconds) / 100;
+    const hps = Math.round(hits.current * 100 / safeSeconds) / 100;
+    const hpsLastFiveSeconds = Math.round(hitsLastFiveSeconds.current * 100 / safeLastFiveSeconds) / 100;
 
     function handleTimeChange() {
         setMilliseconds((ms) => ms + 100);
@@ -27,8 +27,8 @@ export default function HitsPerSecond() {
                 setStarted(true);
             }
 
-            setHits((count) => count + 1);
-            setHitsLastFiveSeconds((count) => count + 1);
+            hits.current++;
+            hitsLastFiveSeconds.current++;
         }
     }
 
@@ -37,12 +37,7 @@ export default function HitsPerSecond() {
             return;
         }
 
-        setMax(
-            (currentMax) =>
-                Math.max(
-                    Math.round(currentMax * 100), Math.round(hps * 100)
-                ) / 100
-        );
+        max.current = Math.max(Math.round(max.current * 100), Math.round(hps * 100)) / 100;
     }, [hits]);
 
     useEffect(() => {
@@ -61,7 +56,7 @@ export default function HitsPerSecond() {
 
     useEffect(() => {
         if (lastFiveSeconds === 0) {
-            setHitsLastFiveSeconds(0);
+            hitsLastFiveSeconds.current = 0;
         }
     }, [seconds]);
 
@@ -70,7 +65,7 @@ export default function HitsPerSecond() {
             className="flex flex-col"
         >
             <p>
-                Total - hits: {hits}
+                Total - hits: {hits.current}
             </p>
             <p>
                 Total - time: {seconds}
@@ -79,10 +74,10 @@ export default function HitsPerSecond() {
                 Total - HPS: {hps}
             </p>
             <p>
-                Total - Peak HPS: {max}
+                Total - Peak HPS: {max.current}
             </p>
             <p>
-                Last 5 seconds - Hits: {hitsLastFiveSeconds}
+                Last 5 seconds - Hits: {hitsLastFiveSeconds.current}
             </p>
             <p>
                 Last 5 seconds - HPS: {hpsLastFiveSeconds}
